@@ -1,0 +1,17 @@
+{
+    "listeners": {
+        "*:9000": {
+            "pass": "applications/fastapi"
+        }
+    },
+    "applications": {
+        "fastapi": {
+            "user": "root",
+            "type": "python",
+            "path": "/code/",
+            "home": "/usr/local",
+            "module": "app.main",
+            "callable": "app"
+        }
+    }
+}

@@ -1,0 +1,61 @@
+version: '3.7'
+volumes:
+  mysql-log:
+    driver: local
+  mysql-conf:
+    driver: local
+
+services:
+  app:
+    container_name: case_order_module
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    privileged: true
+    working_dir: /code
+    volumes:
+      - ./:/code
+    env_file:
+      - .env
+    links:
+      - mysql
+    networks:
+      - project-network # edit
+    ports:
+      - "9001:9000"
+  mysql:
+    image: mysql:8.0.25
+    container_name: case_order_db
+    platform: linux/amd64
+    restart: always
+    ports:
+      - "3313:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=order_module_db # edit
+    volumes:
+      - ./docker/mysql:/var/lib/mysql:Z
+      - ./docker/init:/docker-entrypoint-initdb.d
+      - "mysql-log:/var/log/mysql"
+      - "mysql-conf:/etc/mysql/conf.d"
+    networks:
+      - project-network # edit
+    
+  #rabbitmq:
+   # image: rabbitmq:3.8.9-management
+   # container_name: case_order_rabbitmq
+   # restart: always
+   # ports:
+   #   - "5679:5672"
+   #   - "15679:15672"
+   # environment:
+   #   RABBITMQ_DEFAULT_USER: user
+   #   RABBITMQ_DEFAULT_PASS: password
+   # networks:
+  #  - project-network 
+
+networks:
+  project-network:
+      external:
+        name: case_network # edit
